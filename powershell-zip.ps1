@@ -9,34 +9,35 @@
     Author = "Juliano Sales"
     ModuleVersion = "0.0.0"
     HelpInfoUri = "https://github.com/julianosaless/powershellzip"
-    FunctionsToExport = @( 'Zip', 'UnZip')
+    FunctionsToExport = @( 'Zip','Unzip')
 }
 
-function Zip  {
+
+function Zip {
     [CmdletBinding()]
     Param($source,$destination)
+    Dowload -pathProgram (Join-path $env:temp 7z)
     
-    $pathProgram = Join-path $env:temp 7z
-    Dowload -pathProgram $pathProgram
-    
-    set-alias sz "$pathProgram\7za.exe"
-    sz a -tzip "$destination" "$source\*"
+    set-alias sz "$env:temp\7z\7za.exe"
+    sz a -tzip "$destination" "$source"
 }
 
-function UnZip {
-    [CmdletBinding()]
-    Param($source, $destination)
-    [System.IO.Compression.ZipFile]::ExtractToDirectory($source, $destination)
+function Unzip {
+  [CmdletBinding()]
+  param($source, $destination)
+
+  [Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem");
+  [System.IO.Compression.ZipFile]::ExtractToDirectory($source, $destination)
 }
 
 function Dowload {
     [CmdletBinding()]
     Param($pathProgram)
-   
+
     if (-not (test-path "$Env:temp\7z")){
 		$pathDowload = Join-path $env:temp 7z.zip
 		$url = "http://www.7-zip.org/a/7za920.zip"
 		Invoke-WebRequest $url -OutFile $pathDowload
-        UnZip  $pathDowload  $pathProgram
+        Unzip $pathDowload $pathProgram
 	}
 }
