@@ -6,83 +6,37 @@
 # Generated on: 25-10-2015
 
 @{
+    Author = "Juliano Sales"
+    ModuleVersion = "0.0.0"
+    HelpInfoUri = "https://github.com/julianosaless/powershellzip"
+    FunctionsToExport = @( 'Zip', 'UnZip')
+}
 
-# Script module or binary module file associated with this manifest
-ModuleToProcess = 'CurrencyConversion.psm1'
+function Zip  {
+    [CmdletBinding()]
+    Param($source,$destination)
+    
+    $pathProgram = Join-path $env:temp 7z
+    Dowload -pathProgram $pathProgram
+    
+    set-alias sz "$pathProgram\7za.exe"
+    sz a -tzip "$destination" "$source\*"
+}
 
-# Version number of this module.
-ModuleVersion = '1.0'
+function UnZip {
+    [CmdletBinding()]
+    Param($source, $destination)
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($source, $destination)
+}
 
-# ID used to uniquely identify this module
-GUID = 'c6f2e5e7-91ff-4924-b4bb-8db0624195c9'
-
-# Author of this module
-Author = 'Jonathan Medd'
-
-# Company or vendor of this module
-CompanyName = 'Unknown'
-
-# Copyright statement for this module
-Copyright = '(c) 2011 Jonathan Medd. All rights reserved.'
-
-# Description of the functionality provided by this module
-Description = 'Convert values between different currencies'
-
-# Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = ''
-
-# Name of the Windows PowerShell host required by this module
-PowerShellHostName = ''
-
-# Minimum version of the Windows PowerShell host required by this module
-PowerShellHostVersion = ''
-
-# Minimum version of the .NET Framework required by this module
-DotNetFrameworkVersion = ''
-
-# Minimum version of the common language runtime (CLR) required by this module
-CLRVersion = ''
-
-# Processor architecture (None, X86, Amd64, IA64) required by this module
-ProcessorArchitecture = ''
-
-# Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @()
-
-# Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @()
-
-# Script files (.ps1) that are run in the caller's environment prior to importing this module
-ScriptsToProcess = @()
-
-# Type files (.ps1xml) to be loaded when importing this module
-TypesToProcess = @()
-
-# Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess = @()
-
-# Modules to import as nested modules of the module specified in ModuleToProcess
-NestedModules = @()
-
-# Functions to export from this module
-FunctionsToExport = '*'
-
-# Cmdlets to export from this module
-CmdletsToExport = '*'
-
-# Variables to export from this module
-VariablesToExport = '*'
-
-# Aliases to export from this module
-AliasesToExport = '*'
-
-# List of all modules packaged with this module
-ModuleList = @()
-
-# List of all files packaged with this module
-FileList = 'CurrencyConversion.psm1'
-
-# Private data to pass to the module specified in ModuleToProcess
-PrivateData = ''
-
+function Dowload {
+    [CmdletBinding()]
+    Param($pathProgram)
+   
+    if (-not (test-path "$Env:temp\7z")){
+		$pathDowload = Join-path $env:temp 7z.zip
+		$url = "http://www.7-zip.org/a/7za920.zip"
+		Invoke-WebRequest $url -OutFile $pathDowload
+        UnZip  $pathDowload  $pathProgram
+	}
 }
