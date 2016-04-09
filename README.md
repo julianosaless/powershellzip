@@ -2,6 +2,9 @@
 
 `Import-Module .\powershell-zip.ps1`
 
+#Supported version
+Powershell 5.0 or higher
+
 #Uninstall
 `remove-module powershell-zip`
 
